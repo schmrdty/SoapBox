@@ -4,11 +4,7 @@ import { NextResponse } from 'next/server'
 export const runtime = 'edge'
 
 const customSecretMappings: Record<string, string> = {
-  "secret_cmcb7gbz30000356n3sxdmhrd": "AIzaSyCLau46z83dIYfsXfU8B4zkUzct07kULhY",
-  "secret_cm9150ywc00003b6r8hdkq4u5": "live_BxgFDIvrZfkrhOpHynBatf647idgT9fjdbqrAMM5HEYsELQuifJE3m52BMXjqVqP",
-  "secret_cm9kdjlwb00003b6vx2rde7rd": "EUK6nliWVdB5Nkt4VuNXUsAV7VwBmtwR",
-  "secret_cm915ekms00043b6rzsd0440a": "1d0226d4-9f84-48d6-9486-b4381e220d9f",
-  "secret_cm98tgbme00003b6rjf0egbe3": "f77f2c86182c6dfc620c49b3a3a2204c"
+  "whoops its a secret"
 }
 
 function createSecretMap(): Map<string, string> {
@@ -172,3 +168,4 @@ function replaceInString(str: string, wordMap: Map<string, string>): string {
   }
   return str
 }
+
