@@ -1,0 +1,182 @@
+//--RSS Ticker Feed
+'use client'
+
+import type { ReactNode } from 'react'
+import { useState, useEffect } from 'react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Pin, MessageSquare } from 'lucide-react'
+
+export interface TickerMessage {
+  id: string
+  content: string
+  authorName?: string
+  roomName: string
+  timestamp: Date
+}
+
+interface RSSTickerFeedProps {
+  messages: TickerMessage[]
+  className?: string
+  variant?: 'splash' | 'signin'
+  showSoapBoxBackground?: boolean
+}
+
+export default function RSSTickerFeed({ 
+  messages, 
+  className = '', 
+  variant = 'signin',
+  showSoapBoxBackground = false 
+}: RSSTickerFeedProps): ReactNode {
+  const [currentIndex, setCurrentIndex] = useState<number>(0)
+
+  useEffect(() => {
+    if (messages.length === 0) return
+
+    // 🚀 PERFORMANCE: Use requestAnimationFrame for smoother performance
+    let timeoutId: NodeJS.Timeout
+    let lastUpdate = Date.now()
+    
+    const updateIndex = () => {
+      const now = Date.now()
+      if (now - lastUpdate >= 4000) { // 4 seconds
+        setCurrentIndex((prev) => (prev + 1) % messages.length)
+        lastUpdate = now
+      }
+      timeoutId = setTimeout(updateIndex, 1000) // Check every second instead of constant interval
+    }
+    
+    timeoutId = setTimeout(updateIndex, 4000)
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId)
+    }
+  }, [messages.length])
+
+  if (messages.length === 0) {
+    return null
+  }
+
+  if (variant === 'splash') {
+    return (
+      <div className={`fixed inset-0 pointer-events-none z-10 ${className}`}>
+        {/* SoapBox Background with Semi-transparent Overlay */}
+        {showSoapBoxBackground && (
+          <div 
+            className="absolute inset-0 opacity-30"
+            style={{
+              backgroundImage: 'url(https://usdozf7pplhxfvrl.public.blob.vercel-storage.com/358ee116-d505-4e83-a80d-d7e1baa68a2c-WGSZ7Usr6xI14zZDPgXcDRL8IlFZ2E)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat'
+            }}
+          >
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+          </div>
+        )}
+        
+        {/* Scrolling Messages */}
+        <div className="absolute bottom-20 left-0 right-0 overflow-hidden">
+          <div className="whitespace-nowrap animate-scroll-left">
+            <div className="inline-flex space-x-8">
+              {messages.map((message, index) => (
+                <div
+                  key={`${message.id}-${index}`}
+                  className="inline-flex items-center space-x-3 bg-black/80 backdrop-blur-sm rounded-full px-6 py-3 border border-purple-500/30"
+                >
+                  <Pin className="h-4 w-4 text-purple-400 flex-shrink-0" />
+                  <span className="text-white font-medium text-sm">
+                    {message.content}
+                  </span>
+                  <Badge variant="outline" className="text-xs border-purple-500/30 text-purple-300">
+                    {message.roomName}
+                  </Badge>
+                </div>
+              ))}
+              {/* Duplicate for seamless loop */}
+              {messages.map((message, index) => (
+                <div
+                  key={`${message.id}-duplicate-${index}`}
+                  className="inline-flex items-center space-x-3 bg-black/80 backdrop-blur-sm rounded-full px-6 py-3 border border-purple-500/30"
+                >
+                  <Pin className="h-4 w-4 text-purple-400 flex-shrink-0" />
+                  <span className="text-white font-medium text-sm">
+                    {message.content}
+                  </span>
+                  <Badge variant="outline" className="text-xs border-purple-500/30 text-purple-300">
+                    {message.roomName}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <Card className={`bg-slate-800/50 backdrop-blur-xl border-slate-700/50 ${className}`}>
+      <CardContent className="p-4">
+        <div className="flex items-center space-x-2 mb-3">
+          <MessageSquare className="h-4 w-4 text-purple-400" />
+          <span className="text-sm font-medium text-purple-300">SoapBox Feed</span>
+          <Badge variant="outline" className="text-xs border-slate-600 text-slate-400">
+            {messages.length} pinned
+          </Badge>
+        </div>
+        
+        <ScrollArea className="h-32">
+          <div className="space-y-2">
+            {messages.map((message, index) => (
+              <div
+                key={message.id}
+                className={`p-3 rounded-lg border transition-all duration-300 ${
+                  index === currentIndex
+                    ? 'bg-purple-500/20 border-purple-500/30 transform scale-105'
+                    : 'bg-slate-700/30 border-slate-600/30'
+                }`}
+              >
+                <div className="flex items-start justify-between space-x-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-white font-medium mb-1 truncate">
+                      {message.content}
+                    </p>
+                    <div className="flex items-center space-x-2">
+                      <Badge variant="outline" className="text-xs border-slate-600 text-slate-400">
+                        {message.roomName}
+                      </Badge>
+                      {message.authorName && (
+                        <span className="text-xs text-slate-500">
+                          by {message.authorName}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <Pin className="h-3 w-3 text-purple-400 flex-shrink-0 mt-1" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </ScrollArea>
+      </CardContent>
+    </Card>
+  )
+}
+
+// Custom CSS for scrolling animation (add to globals.css)
+export const tickerStyles = `
+@keyframes scroll-left {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-scroll-left {
+  animation: scroll-left 30s linear infinite;
+}
+`
