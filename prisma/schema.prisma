@@ -1,0 +1,144 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model EmpireRoom {
+  id                 String   @id @default(cuid())
+  name               String
+  description        String?
+  empireVaultAddress String
+  tokenAddress       String
+  tokenInfo          Json     // Token metadata
+  createdBy          String
+  moderators         String[] @default([])
+  isActive           Boolean  @default(true)
+  memberCount        Int      @default(1)
+  messageCount       Int      @default(0)
+  
+  // NEW: Updated settings structure
+  settings           Json     // RoomSettings JSON
+  
+  // Splits integration
+  splitContractAddress String?
+  splitId              String?
+  
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  directMessages     DirectMessage[]
+  directMessageSetups DirectMessageSetup[]
+  pinnedMessages     PinnedMessage[]
+  
+  @@map("empire_rooms")
+}
+
+model DirectMessage {
+  id           String   @id @default(cuid())
+  fromAddress  String
+  toAddress    String
+  content      String
+  timestamp    DateTime @default(now())
+  isRead       Boolean  @default(false)
+  roomId       String?  // Optional room context
+  
+  // Relations
+  room         EmpireRoom? @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  
+  @@map("direct_messages")
+}
+
+model DirectMessageSetup {
+  id          String   @id @default(cuid())
+  userAddress String
+  roomId      String
+  setupFeePaid Boolean @default(false)
+  paidAt      DateTime?
+  txHash      String?
+  
+  // Relations
+  room        EmpireRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  
+  // Unique constraint
+  @@unique([userAddress, roomId])
+  @@map("direct_message_setups")
+}
+
+model RoomSettings {
+  id                 String   @id @default(cuid())
+  roomId             String   @unique
+  ownerId            String
+  empireVaultAddress String
+  
+  // Background Settings
+  backgroundType        String   @default("solid")
+  backgroundSolidColor  String   @default("#f9fafb")
+  backgroundGradientStart String? 
+  backgroundGradientEnd   String?
+  backgroundGradientDirection String? @default("to-r")
+  backgroundImageUrl    String?
+  backgroundOpacity     Int      @default(100)
+  
+  // Room Configuration
+  roomName           String
+  roomDescription    String?
+  sfwLevel          String   @default("moderate")
+  maxMessageLength  Int      @default(500)
+  cooldownSeconds   Int      @default(4)
+  allowImages       Boolean  @default(true)
+  allowLinks        Boolean  @default(true)
+  allowGames        Boolean  @default(true)
+  
+  // LEGACY: Old cost settings (keeping for backwards compatibility)
+  ownerMessageCost     Int @default(100)
+  moderatorMessageCost Int @default(100)
+  tagAllCost          Int @default(100)
+  imageCost           Int @default(100)
+  linkCost            Int @default(100)
+  gameCost            Int @default(100)
+  directMessageCost   Int @default(1000)
+  
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("room_settings")
+}
+
+model PinnedMessage {
+  id          String   @id @default(cuid())
+  roomId      String
+  content     String
+  authorAddress String
+  authorName   String?
+  isActive     Boolean  @default(true)
+  showOnSplash Boolean  @default(false)
+  showOnSignIn Boolean  @default(false)
+  displayOrder Int      @default(0)
+  
+  // Emergency override by platform admin
+  isEmergencyOverride Boolean @default(false)
+  overrideReason     String?
+  
+  // Metadata
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  room        EmpireRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  
+  @@map("pinned_messages")
+}
