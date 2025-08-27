@@ -1,0 +1,249 @@
+//--manifest.json
+{
+  "project": {
+    "name": "SoapBox",
+    "description": "Token-gated XMTP group chats for Empire Builder vault-authorized communities",
+    "version": "0.1.0",
+    "architecture": "Next.js + PostgreSQL + Redis + XMTP",
+    "lastUpdated": "2025-08-27"
+  },
+
+  "coreFiles": [
+    "package.json",
+    "next.config.js",
+    "tailwind.config.ts",
+    "tsconfig.json",
+    ".gitignore",
+    "README.md",
+    "prisma/schema.prisma"
+  ],
+
+  "entryPoints": [
+    "src/app/layout.tsx",
+    "src/app/page.tsx",
+    "src/components/providers.tsx",
+    "src/components/SoapBoxMain.tsx",
+    "src/components/SoapBoxApp.tsx",
+
+    "src/app/soapbox/[symbol]/page.tsx",
+    "src/app/soapbox/[symbol]/opengraph-image.tsx"
+  ],
+
+  "coreConfiguration": [
+    "src/lib/wagmi/config.ts",
+    "src/lib/services/prisma.ts",
+    "src/lib/redis.ts",
+    "src/lib/rpc-config.ts",
+    "src/lib/rpc-config-client.ts"
+  ],
+
+  "keyServices": [
+    "src/lib/services/empireApi.ts",
+    "src/lib/services/empireAuth.ts",
+    "src/lib/services/authorizationCache.ts",
+    "src/lib/services/roomDatabase.ts",
+    "src/lib/services/chatMessages.ts",
+    "src/lib/services/posthog.ts",
+    "src/lib/services/pinnedMessages.ts",
+
+    "src/lib/services/symbolEmbeds.ts"        // NEW: symbol → rooms + pinned aggregation
+  ],
+
+  "coreHooks": [
+    "src/hooks/useAuth.ts",
+    "src/hooks/useXMTPChat.ts",
+    "src/hooks/useEmpireApi.ts",
+    "src/hooks/useWalletConnect.ts",
+    "src/hooks/useCreateChat.ts",
+    "src/hooks/useJoinChat.ts"
+  ],
+
+  "mainComponents": [
+    "src/components/WelcomeScreen.tsx",
+    "src/components/CreateChatFlow.tsx",
+    "src/components/JoinChatFlow.tsx",
+    "src/components/RoomChatInterface.tsx",
+    "src/components/AdminSoapBoxManager.tsx",
+    "src/components/wallet/ConnectButton.tsx",
+
+    "src/components/Embeds/SymbolFeed.tsx"    // NEW: visual stack used by /soapbox/$SYMBOL
+  ],
+
+  "criticalApiRoutes": [
+    "src/app/api/proxy/route.ts",
+    "src/app/api/auth/me/route.ts",
+    "src/app/api/empire-rooms/route.ts",
+    "src/app/api/empire-vaults/route.ts",
+    "src/app/api/rooms/create/route.ts",
+    "src/app/api/rooms/join/route.ts",
+    "src/app/api/direct-messages/route.ts",
+    "src/app/api/empire-token-info/route.ts",
+
+    "src/app/api/embeds/symbol/[symbol]/route.ts"  // NEW: JSON for server-side embed build
+  ],
+
+  "typeDefinitions": [
+    "src/app/types/index.ts",
+    "src/app/types/chat.ts",
+    "src/app/types/wallet.ts",
+    "src/app/types/api.ts",
+    "src/app/types/embeds.ts"                // NEW
+  ],
+
+  "uiFoundation": [
+    "src/components/ui/button.tsx",
+    "src/components/ui/input.tsx",
+    "src/components/ui/card.tsx",
+    "src/components/ui/dialog.tsx",
+    "src/components/ui/form.tsx",
+    "src/components/ui/toast.tsx"
+  ],
+
+  "blockchainIntegration": [
+    "src/abis/empireVault.ts",
+    "src/abis/soapboxSplitsFactory.ts",
+    "src/lib/contracts/soapboxSplitsFactory.ts"
+  ],
+
+  "utilities": [
+    "src/lib/utils.ts",
+    "src/lib/logger.ts",
+    "src/lib/utils/environmentDetection.ts",
+    "src/lib/utils/rateLimitHandler.ts",
+    "src/lib/utils/secureStorage.ts"
+  ],
+
+  "providers": [
+    "src/providers/XMTPProvider.tsx",
+    "src/components/SoapBoxErrorBoundary.tsx",
+    "src/components/LoadingBoundary.tsx"
+  ],
+
+  "initialFocusAreas": {
+    "authentication": [
+      "src/hooks/useAuth.ts",
+      "src/app/api/auth/me/route.ts",
+      "src/lib/services/empireAuth.ts"
+    ],
+    "messaging": [
+      "src/hooks/useXMTPChat.ts",
+      "src/providers/XMTPProvider.tsx",
+      "src/lib/services/chatMessages.ts"
+    ],
+    "roomManagement": [
+      "src/components/CreateChatFlow.tsx",
+      "src/components/JoinChatFlow.tsx",
+      "src/app/api/rooms/create/route.ts",
+      "src/app/api/rooms/join/route.ts"
+    ],
+    "empireIntegration": [
+      "src/lib/services/empireApi.ts",
+      "src/hooks/useEmpireApi.ts",
+      "src/app/api/empire-rooms/route.ts"
+    ],
+    "symbolEmbeds": [
+      "src/lib/services/pinnedMessages.ts",
+      "src/lib/services/symbolEmbeds.ts",
+      "src/app/soapbox/[symbol]/page.tsx",
+      "src/app/soapbox/[symbol]/opengraph-image.tsx",
+      "src/app/api/embeds/symbol/[symbol]/route.ts",
+      "src/components/Embeds/SymbolFeed.tsx"
+    ]
+  },
+
+  "sessionPriorities": {
+    "readFirst": [
+      "README.md",
+      "src/lib/services/pinnedMessages.ts",
+      "src/lib/services/symbolEmbeds.ts",
+      "src/app/soapbox/[symbol]/page.tsx",
+      "src/app/soapbox/[symbol]/opengraph-image.tsx"
+    ],
+    "understandArchitecture": [
+      "src/components/providers.tsx",
+      "src/lib/services/prisma.ts",
+      "src/lib/redis.ts",
+      "src/lib/wagmi/config.ts"
+    ],
+    "coreLogic": [
+      "src/app/api/proxy/route.ts",
+      "src/app/api/embeds/symbol/[symbol]/route.ts",
+      "src/lib/services/empireApi.ts"
+    ],
+    "userFlow": [
+      "src/components/Embeds/SymbolFeed.tsx",
+      "src/components/RoomChatInterface.tsx"
+    ]
+  },
+
+  "criticalMissing": [
+    "Public-visibility toggle on pinned messages specifically for embeds",
+    "Symbol → rooms index (by Vault/Empire metadata) with caching",
+    "OpenGraph image generator at /soapbox/$SYMBOL/opengraph-image",
+    "Embed JSON API for pre-rendering unfurls",
+    "Per-platform unfurl QA (Farcaster, X/Twitter, Facebook, iMessage/Discord)"
+  ],
+
+  "dependencies": {
+    "critical": [
+      "next@15.3.4",
+      "react@19.1.0",
+      "typescript@5.8.3",
+      "@prisma/client@^6.13.0",
+      "ioredis@^5.6.1",
+      "@xmtp/browser-sdk@^2.0.0"
+    ],
+    "blockchain": [
+      "wagmi@^2.16.3",
+      "viem@^2.33.3",
+      "@coinbase/onchainkit@^0.38.17",
+      "@tanstack/react-query@^5.85.3",
+      "@reown/appkit@^1.7.19",
+      "@farcaster/miniapp-sdk@latest"
+      "@farcaster/miniapp-wagmi-connector@latest"
+    ],
+    "ui": [
+      "tailwindcss@^3.4.1",
+      "lucide-react@^0.511.0",
+      "framer-motion@^12.12.1",
+      "@radix-ui/react-dialog@^1.1.13",
+      "@radix-ui/react-button@^1.2.2"
+    ]
+  },
+
+  "environment": {
+    "required": [
+      "NEXT_PUBLIC_BASE_URL",
+      "EMBED_MAX_FEEDS",
+      "EMBED_CACHE_TTL",
+      "EMBED_WHATS_THIS_URL",
+      "EMBED_BRAND_EMPIRE_URL"   // base to link Empire page for each room
+    ]
+  },
+
+  "quickStartChecklist": [
+    "Ensure pinned messages intended for embeds are marked public/‘unhidden’",
+    "Set NEXT_PUBLIC_BASE_URL (absolute, https)",
+    "Set EMBED_MAX_FEEDS=4 (default 4)",
+    "Set EMBED_CACHE_TTL (e.g. 300s) for symbol → rooms + pinned cache",
+    "Set EMBED_WHATS_THIS_URL to SoapBox landing page",
+    "Verify /soapbox/$SYMBOL unfurls with OG image + title across platforms"
+  ],
+
+  "commonTasks": {
+    "addNewSymbolRoomMapping": [
+      "Update symbolEmbeds index in DB/service",
+      "Purge embed caches for affected symbol",
+      "Validate /soapbox/$SYMBOL unfurl"
+    ],
+    "togglePinnedForEmbed": [
+      "Mark pinned message as public",
+      "Rebuild OG image (auto on next request)"
+    ],
+    "repoClean": [
+      "rm -rf .next node_modules",
+      "npm cache verify",
+      "npm i && npm run build"
+    ]
+  }
+}
