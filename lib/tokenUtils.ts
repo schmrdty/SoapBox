@@ -1,4 +1,5 @@
 //--tokenUtils.ts
+//**THIS FILE WAS DEPRECATED FOR A MORE EFFICIENT MODEL & IN SUPPORT OF 100% OF TIPS TO END USERS INSIDE SOAPBOX.**
 import type { TipTransaction } from '@/app/types/chat';
 import { soapboxSplitsFactory } from './contracts/soapboxSplitsFactory';
 import { createResilientPublicClient } from './rpc-config';
@@ -6,9 +7,9 @@ import { parseUnits, formatUnits } from 'viem';
 
 // Wallet addresses for revenue split - UPDATED WITH CORRECT ADDRESSES
 export const REVENUE_WALLETS = {
-  DEV_WALLET: process.env.NEXT_PUBLIC_DEV_WALLET || '0x44459112088Ff8BbB6967bfCA7A8CD31980F3cF4',
-  MYU_VAULT: process.env.NEXT_PUBLIC_MYU_VAULT || '0x2d26B3Da95331e169ea9F31cA8CED9fa761deb26',
-  SOAPBOX_SAFE: process.env.NEXT_PUBLIC_SOAPBOX_SAFE || '0x9132659fD03e1153A33AfF90f2E954b0E7B5b331',
+  DEV_WALLET: process.env.NEXT_PUBLIC_DEV_WALLET || '',
+  MYU_VAULT: process.env.NEXT_PUBLIC_MYU_VAULT || '',
+  SOAPBOX_SAFE: process.env.NEXT_PUBLIC_SOAPBOX_SAFE || '',
 } as const;
 
 export interface RevenueSplit {
@@ -426,4 +427,5 @@ export function createTipTransaction(
     transaction,
     calls,
   };
+
 }
