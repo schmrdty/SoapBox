@@ -179,4 +179,3 @@ export const tickerStyles = `
 .animate-scroll-left {
   animation: scroll-left 30s linear infinite;
 }
-`
